@@ -45,6 +45,8 @@ function feature = featureExtraction(I, featureType, filterType)
     if featureType == 'SIFT'
         feature = feature(:,1:k-1);
     end
-
-    feature = transpose(feature);
+    
+%% Reshape feature matrix to a vector
+    feature = reshape(feature, [], 1);
+    
 end
