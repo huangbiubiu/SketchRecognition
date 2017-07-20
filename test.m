@@ -20,4 +20,6 @@ img = combinePatch(patches, nx, ny);
 imshow(img)
 
 %% Extract features
-extractLBPFeatures(patches(:,:,1))
+extractLBPFeatures(patches(:,:,1));
+[siftFeatures,~] = sift(I);
+mlbp(I);

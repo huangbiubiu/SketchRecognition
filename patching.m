@@ -12,7 +12,7 @@ function [splitImg,nx,ny] = patching(I, overlap)
             k = k + 1;
         end
     end
-    fprintf('k = %d, size = %d.\n',k,size(splitImg,3));
+%     fprintf('k = %d, size = %d.\n',k,size(splitImg,3));
 end
 
 function img = cut(I, i, j, width, height)
