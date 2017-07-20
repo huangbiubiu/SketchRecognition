@@ -18,3 +18,6 @@ I = normalize(I,16);
 [patches,nx,ny] = patching(I,16);
 img = combinePatch(patches, nx, ny);
 imshow(img)
+
+%% Extract features
+extractLBPFeatures(patches(:,:,1))
