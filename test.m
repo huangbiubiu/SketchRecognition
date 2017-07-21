@@ -3,7 +3,8 @@ I = imread(path);
 % I = rgb2gray(I);
 I = normalize(I,16);
 
-featureExtraction(I, 'SIFT', 'csdn')
+siftFeatures = featureExtraction(I, 'SIFT', 'csdn');
+mlbpFeatures = featureExtraction(I, 'MLBP', 'csdn');
 %% Image Filter
 % [dog, csdn, gau] = imageFiltering(I);
 

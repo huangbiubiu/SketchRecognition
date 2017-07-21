@@ -26,8 +26,8 @@ function feature = featureExtraction(I, featureType, filterType)
     case 'MLBP'
         feature = zeros(236,size(patches,3));
     case 'SIFT'
-        feature = zeros(128,3*size(patches,3));
-        k = 1;
+        feature = zeros(128,size(patches,3));
+        % k = 1;
     end
 
     for i = 1 : size(patches,3)
@@ -37,16 +37,21 @@ function feature = featureExtraction(I, featureType, filterType)
         case 'SIFT'
             [f,~] = sift(patches(:,:,i));
             num = size(f,1);
-            feature(:,k:k+num-1) = transpose(f);
-            k = k + num;
+            if num == 0
+                f = zeros(1, 128);
+            else
+                f = sum(f, 1);
+            end
+            feature(:,i) = transpose(f);
+            % k = k + num;
         end
     end
     
-    if featureType == 'SIFT'
-        feature = feature(:,1:k-1);
-    end
+    % if featureType == 'SIFT'
+    %     feature = feature(:,1:k-1);
+    % end
     
 %% Reshape feature matrix to a vector
     feature = reshape(feature, [], 1);
-    
+    feature = feature ./ sum(feature);
 end
