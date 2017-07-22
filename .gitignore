@@ -1,0 +1,5 @@
+#testing image files
+*.pgm
+
+#temp files in SIFT
+temp.key
