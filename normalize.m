@@ -1,4 +1,6 @@
-function img = normalize(I,overlap, eyePosition)
+function img = normalize(I,overlap)
+    eyePosition = eyeDetection(I);
+
     %% Rotate the image
     dy = eyePosition(4) - eyePosition(2);
     dx = eyePosition(3) - eyePosition(1);
@@ -9,12 +11,20 @@ function img = normalize(I,overlap, eyePosition)
     img = rotateAround(I, rotateCenter(1), rotateCenter(2), angle);
     
     %% Scaling the image
+    eyePosition = eyeDetection(img);
+    dy = eyePosition(4) - eyePosition(2);
+    dx = eyePosition(3) - eyePosition(1);
+
     distance = sqrt(dx^2 + dy^2);
     scale= 75 / distance;
     img = imresize(img, scale);
     
     %% Cropping the image
-    
+    eyePosition = eyeDetection(img);
+    eyeCenter = [(eyePosition(1)+eyePosition(3))/2,...
+        (eyePosition(2) + eyePosition(4))/2];
+    corner = [eyeCenter(1)-100,eyeCenter(2) - 115];
+    img = imcrop(img, [corner(1), corner(2), 200, 250]);
     
     
     %% Cut the image

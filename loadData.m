@@ -28,17 +28,16 @@ function loadData(database)
             if size(sketchimg, 3) ~= 1
                 sketchset(:,:,i) = rgb2gray(sketchimg);
             else
-                sketchset = sketchimg;
+                sketchset(:,:,i) = sketchimg;
             end
         end
         
-        eyeLocation = csvread('D:\OneDrive\Documents\Documents\Sketch\Database\CUFS\CUFS.csv');
-        sketchEyePosition = int32(eyeLocation(:,1:4));
-        galleryEyePosition = int32(eyeLocation(:,5:8));
+%         eyeLocation = csvread('D:\OneDrive\Documents\Documents\Sketch\Database\CUFS\CUFS.csv');
+%         sketchEyePosition = int32(eyeLocation(:,1:4));
+%         galleryEyePosition = int32(eyeLocation(:,5:8));
         
         save(strcat(database,'.mat'),...
-            'galleryset','sketchset',...
-            'sketchEyePosition','galleryEyePosition');
+            'galleryset','sketchset');
     end
 
 end

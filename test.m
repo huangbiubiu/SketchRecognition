@@ -1,9 +1,18 @@
 path = '..\Database\CUFS\sketch\f-039-01-sz1.jpg';
 I = imread(path);
 % I = rgb2gray(I);
-I = normalize(I,16,[175 309 264 307]);
+%% Image normalizer
 
-imshow(I);
+load('norCUFS.mat');
+index = randi([1,100]);
+
+subplot(1,2,1)
+imshow(T(:,:,index * 2));
+subplot(1,2,2)
+imshow(T(:,:,index * 2 + 1));
+
+
+
 
 % siftFeatures = featureExtraction(I, 'SIFT', 'csdn');
 % mlbpFeatures = featureExtraction(I, 'MLBP', 'csdn');

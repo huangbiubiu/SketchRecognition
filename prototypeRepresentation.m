@@ -14,18 +14,18 @@ function X = prototypeRepresentation(T)
 %      ...
 %      |P_nt|
 %      |G_nt|
-    l = size(T, 3);
+    l = size(T, 2);
     nt = int32(l/2);
 
-    Pset = T(1:2:end);
-    Gset = T(2:2:end);
+    Pset = T(:,1:2:end);
+    Gset = T(:,2:2:end);
 
     X = zeros(nt, 2*nt);
     for i = 1 : nt
         if mod(i, 2) == 1 %P
-            X(:,i) = similarity(T(:,:,i), Pset);
+            X(:,i) = similarity(T(:,i), Pset);
         else %G
-            X(:,i) = similarity(T(:,:,i), Gset);
+            X(:,i) = similarity(T(:,i), Gset);
         end
     end
 end
