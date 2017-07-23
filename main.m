@@ -25,11 +25,12 @@ clear;
 % clear;
 
 %% Load data
-load('norCUFS.mat');
+% load('norCUFS.mat');
 
 %% Extract features
-% nt = size(T,3)/2;
-% dataset = T;
+
+% dataset = T(:,:,1:140);
+% nt = size(dataset,3)/2;
 % T = zeros(143*236,nt*2);
 % for i = 1 : 2 * nt
 %     T(:,i) = featureExtraction(dataset(:,:,i), 'MLBP', 'csdn');
@@ -41,11 +42,22 @@ X = prototypeRepresentation(T);
 
 %% Discriminant analysis
 nt = size(X, 2);
+
+% Rescaling features
+% for i = 1 : size(X, 1)
+%     for j = 1 : size(X, 2)
+%         X(i, j) = (X(i, j) - min(X(i, :))/...
+%             (max(X(i, :)) - min(X(i, :))));
+%     end
+% end
+
 [W1, score, ~, ~, ~, mu] = pca(transpose(X));
 meancenterX = bsxfun(@minus, X, mean(X)); %uncertain
 Y = repmat(1:1:nt/2,2,1);
 Y = Y(:);
 % [SW SB] = scattermat(transpose(meancenterX)*W1,Y);
 [SW SB] = scattermat(score,Y);
-[~,~,W2] = eig(transpose(inv(SW)*SB));
+ma = SW\SB;
+ma = (ma - min(ma)) ./ (max(ma) - min(ma));
+[~,~,W2] = eig(transpose(ma));
 W = W1 * W2;

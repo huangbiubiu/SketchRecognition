@@ -21,7 +21,7 @@ function X = prototypeRepresentation(T)
     Gset = T(:,2:2:end);
 
     X = zeros(nt, 2*nt);
-    for i = 1 : nt
+    for i = 1 : 2*nt
         if mod(i, 2) == 1 %P
             X(:,i) = similarity(T(:,i), Pset);
         else %G
