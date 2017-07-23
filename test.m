@@ -1,10 +1,12 @@
-path = '..\Database\CUFS\sketch\f1-001-01-sz1.jpg';
+path = '..\Database\CUFS\sketch\f-039-01-sz1.jpg';
 I = imread(path);
 % I = rgb2gray(I);
-I = normalize(I,16);
+I = normalize(I,16,[175 309 264 307]);
 
-siftFeatures = featureExtraction(I, 'SIFT', 'csdn');
-mlbpFeatures = featureExtraction(I, 'MLBP', 'csdn');
+imshow(I);
+
+% siftFeatures = featureExtraction(I, 'SIFT', 'csdn');
+% mlbpFeatures = featureExtraction(I, 'MLBP', 'csdn');
 %% Image Filter
 % [dog, csdn, gau] = imageFiltering(I);
 

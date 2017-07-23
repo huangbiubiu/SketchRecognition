@@ -1,5 +1,11 @@
 #testing image files
-*.pgm
+sift/*.pgm
 
 #temp files in SIFT
-temp.key
+sift/temp.key
+
+#temp files in matlab
+temp.jpg
+
+#Face detection via C#
+FaceDetection/

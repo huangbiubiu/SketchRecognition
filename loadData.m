@@ -11,7 +11,7 @@ function loadData(database)
         garlleryExample = imread(fullfile(galleryPath, galleryFiles(1).name));
         sketchExample = imread(fullfile(sketchPath, ganame2skname(galleryFiles(1).name)));
         datasize = length(galleryFiles);
-
+        
         galleryset = uint8(zeros(size(garlleryExample, 1), ...
                     size(garlleryExample, 2), ...
                     datasize));
@@ -19,6 +19,7 @@ function loadData(database)
                     size(sketchExample, 2), ...
                     datasize));
         
+                
         for i = 1 : datasize
             filename = galleryFiles(i).name;
             galleryset(:,:,i) = rgb2gray(imread(fullfile(galleryPath,filename)));
@@ -30,8 +31,14 @@ function loadData(database)
                 sketchset = sketchimg;
             end
         end
-
-        save(strcat(database,'.mat'),'galleryset','sketchset');
+        
+        eyeLocation = csvread('D:\OneDrive\Documents\Documents\Sketch\Database\CUFS\CUFS.csv');
+        sketchEyePosition = int32(eyeLocation(:,1:4));
+        galleryEyePosition = int32(eyeLocation(:,5:8));
+        
+        save(strcat(database,'.mat'),...
+            'galleryset','sketchset',...
+            'sketchEyePosition','galleryEyePosition');
     end
 
 end
