@@ -4,16 +4,18 @@ function X = prototypeRepresentation(T)
 % Syntax: X = prototypeRepresentation(T)
 %
 % Refer to (9) in the paper.
+% 
+% The structure of T:
 % T should be a height*width*nt matrix, where p is the size
 % of the image.
 % The argument P and G is actually f(P) and f(G) in the paper.
-% i.e. |P_1 |
-%      |G_1 |
-%      |P_2 |
-%      |G_2 |
+% i.e. |f(P_1) |
+%      |f(G_1) |
+%      |f(P_2) |
+%      |f(G_2) |
 %      ...
-%      |P_nt|
-%      |G_nt|
+%      |f(P_nt)|
+%      |f(G_nt)|
     l = size(T, 2);
     nt = int32(l/2);
 
