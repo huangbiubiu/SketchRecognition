@@ -28,16 +28,31 @@ for i = 1 : size(gallery, 2)
 end
 
 %% Choose a probe image
-index = 99; %Can be a random image
-I = norData(:, :, index);
-sketchFeature = featureExtraction(I, 'MLBP', 'csdn');
-phiP = similarity(sketchFeature, sketchFeatures);
-% probe = transpose(W)*(phiP - transpose(mu));
-probe = [ones(size(phiP,2),1) (phiP - transpose(mu))'] * W';
-probe = probe';
+result = zeros(30, 2);
+for index = 71 : 100
+%     index = randi([71,100]); %Can be a random image
+    I = norData(:, :, index);
+    sketchFeature = featureExtraction(I, 'MLBP', 'csdn');
+    phiP = similarity(sketchFeature, sketchFeatures);
+    % probe = transpose(W)*(phiP - transpose(mu));
+    probe = [ones(size(phiP,2),1) (phiP - transpose(mu))'] * W';
+    probe = probe';
 
-%% Recognition
-S = zeros(size(gallery,2), 1);% score with all testing gallery image
-for i = 1 : size(gallery, 2) % calculate all S function
-    S(i,:) = dot(probe, gallery(:,i))/((norm(probe).*norm(gallery(:, i))));
+    %% Recognition
+    S = zeros(size(gallery,2), 1);% score with all testing gallery image
+    for i = 1 : size(gallery, 2) % calculate all S function
+        S(i,:) = dot(probe, gallery(:,i))/((norm(probe).*norm(gallery(:, i))));
+    end
+
+    [~, indexG] = max(S);
+    indexG = indexG + 70;
+
+    %% Plot recognition result
+    load('CUFS.mat')
+    subplot(1,2,1)
+    imshow(sketchset(:,:,index));
+    subplot(1,2,2)
+    imshow(galleryset(:,:,indexG));
+    fprintf('Recognition result: Sketch: %d, Gallery: %d\n',index,indexG);
+    result(index - 70,:) = [index, indexG];
 end
