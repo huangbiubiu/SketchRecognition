@@ -27,17 +27,11 @@ for i = 1 : size(gallery, 2)
         [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W';
 end
 
-%% Choose a probe image
-index = 99; %Can be a random image
+%% Choose a random 
+index = 99;
 I = norData(:, :, index);
 sketchFeature = featureExtraction(I, 'MLBP', 'csdn');
 phiP = similarity(sketchFeature, sketchFeatures);
 % probe = transpose(W)*(phiP - transpose(mu));
 probe = [ones(size(phiP,2),1) (phiP - transpose(mu))'] * W';
-probe = probe';
 
-%% Recognition
-S = zeros(size(gallery,2), 1);% score with all testing gallery image
-for i = 1 : size(gallery, 2) % calculate all S function
-    S(i,:) = dot(probe, gallery(:,i))/((norm(probe).*norm(gallery(:, i))));
-end
