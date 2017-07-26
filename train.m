@@ -29,7 +29,10 @@ clear;
 
 load('norCUFS.mat');
 
-dataset = T(:,:,1:140);
+trainRate = 0.7;
+dataSize = size(T, 3) * trainRate;
+
+dataset = T(:,:,1:dataSize);
 nt = size(dataset,3)/2;
 T = zeros(143*236,nt*2);
 for i = 1 : 2 * nt

@@ -1,3 +1,4 @@
+clear;
 path = '..\Database\CUFS\sketch\f-039-01-sz1.jpg';
 I = imread(path);
 % I = rgb2gray(I);

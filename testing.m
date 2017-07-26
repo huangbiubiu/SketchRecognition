@@ -10,10 +10,13 @@ galleryFeatures = T(:,2:2:end);
 nt = size(T, 2) / 2;
 
 %% Load all testing gallery data and extract features
+gStartIndex = 1;
+gEndIndex = 20;
+
 
 norGallery = norData(:,:,2:2:end);
-testingG = norGallery(:,:, 71:100);
-testingGalleryFeatures = zeros(143 * 236, 30);
+testingG = norGallery(:,:, gStartIndex:gEndIndex);
+testingGalleryFeatures = zeros(143 * 236, gEndIndex - gStartIndex + 1);%MLBP
 for i = 1 : size(testingGalleryFeatures, 2)
     testingGalleryFeatures(:,i) = ...
         featureExtraction(testingG(:,:,i),...
@@ -28,8 +31,11 @@ for i = 1 : size(gallery, 2)
 end
 
 %% Choose a probe image
-result = zeros(30, 2);
-for index = 71 : 100
+% for index = 71 : 100
+beginIndex = 1;
+endIndex = 10
+result = zeros(endIndex - beginIndex + 1, 2);
+for index = beginIndex : endIndex
 %     index = randi([71,100]); %Can be a random image
     I = norData(:, :, index);
     sketchFeature = featureExtraction(I, 'MLBP', 'csdn');
@@ -45,7 +51,7 @@ for index = 71 : 100
     end
 
     [~, indexG] = max(S);
-    indexG = indexG + 70;
+    indexG = indexG + gStartIndex - 1;
 
     %% Plot recognition result
     load('CUFS.mat')
@@ -54,5 +60,5 @@ for index = 71 : 100
     subplot(1,2,2)
     imshow(galleryset(:,:,indexG));
     fprintf('Recognition result: Sketch: %d, Gallery: %d\n',index,indexG);
-    result(index - 70,:) = [index, indexG];
+    result(index - beginIndex + 1,:) = [index, indexG];
 end
