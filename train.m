@@ -34,28 +34,49 @@ dataSize = size(T, 3) * trainRate;
 
 dataset = T(:,:,1:dataSize);
 nt = size(dataset,3)/2;
-T = zeros(143*236,nt*2);
+
+Tmc = zeros(143*236,nt*2);
+Tsc = zeros(143*128,nt*2);
+Tmd = zeros(143*236,nt*2);
+Tsd = zeros(143*128,nt*2);
+Tmg = zeros(143*236,nt*2);
+Tsg = zeros(143*128,nt*2);
+
 for i = 1 : 2 * nt
-    T(:,i) = featureExtraction(dataset(:,:,i), 'MLBP', 'csdn');
+    Tmc(:,i,1) = featureExtraction(dataset(:,:,i), 'MLBP', 'csdn');
+    Tsc(:,i,2) = featureExtraction(dataset(:,:,i), 'SIFT', 'csdn');
+    Tmd(:,i,3) = featureExtraction(dataset(:,:,i), 'MLBP', 'dog');
+    Tsd(:,i,4) = featureExtraction(dataset(:,:,i), 'SIFT', 'dog');
+    Tmg(:,i,5) = featureExtraction(dataset(:,:,i), 'MLBP', 'gaussian');
+    Tsg(:,i,6) = featureExtraction(dataset(:,:,i), 'SIFT', 'gaussian');
 end
-save('MLBP.mat','T');
+save('featureVectorsfeatureVectors.mat',...
+    'Tmc','Tsc',...
+    'Tmd','Tsd',...
+    'Tmg','Tsg');
 
 %% Represent prototype
 
-load('MLBP.mat');
-X = prototypeRepresentation(T);
+load('featureVectors.mat');
+l = size(Tmc, 2);
+nt = int32(l/2);
+X = NaN(nt, 2*nt,6);
 
+X(:,:,1) = prototypeRepresentation(Tmc(:,:));
+X(:,:,1) = prototypeRepresentation(Tsc(:,:));
+X(:,:,1) = prototypeRepresentation(Tmd(:,:));
+X(:,:,1) = prototypeRepresentation(Tsd(:,:));
+X(:,:,1) = prototypeRepresentation(Tmg(:,:));
+X(:,:,1) = prototypeRepresentation(Tsg(:,:));
+save('prototype.mat','X');
 %% Discriminant analysis
-nt = size(X, 2);
-
-[~, score, ~, ~, ~, mu] = pca(transpose(X));
-meancenterX = bsxfun(@minus, X, mean(X)); %uncertain
-Y = repmat(1:1:nt/2,2,1);
-Y = Y(:);
-W = LDA(transpose(X), Y);
-% [SW SB] = scattermat(transpose(X),Y);
-% ma = SW\SB;
-% ma = (ma - min(ma)) ./ (max(ma) - min(ma));
-% [~,~,W2] = eig(transpose(ma));
-% W = W1 * W2;
+W = NaN(nt, nt+1, 6);
+mu = NaN(6, 1);
+for i = 1 : 6
+    [~, score, ~, ~, ~, mu(i,:)] = pca(transpose(X(:,:,i)));
+%     meancenterX = bsxfun(@minus, X, mean(X)); %uncertain
+    Y = repmat(1:1:nt/2,2,1);
+    Y = Y(:);
+    W(:,:,i) = LDA(transpose(X(:,:,i)), Y);
+end
 save('prototype.mat','W','mu','dataset');
