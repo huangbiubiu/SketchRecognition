@@ -1,8 +1,9 @@
 %% Set parameters
-testingRate = 0.3;
-gStartIndex = 1;
-gEndIndex = 20;
-
+gStartIndex = 1; %for gallery
+gEndIndex = 10;
+beginIndex = 1; %for sketch
+endIndex = 10;
+gallerySize = gEndIndex - gStartIndex + 1;
 B = 30;
 alpha = 0.1;
 %% Load data
@@ -14,163 +15,95 @@ load('prototype.mat');
 PHILength = zeros(6,1);
 WLength = zeros(B, 6);
 for bag = 1 : B
-    WLength(bag, 1) = size(bagSet(bag).Wmc,1);
-    WLength(bag, 2) = size(bagSet(bag).Wsc,1);
-    WLength(bag, 3) = size(bagSet(bag).Wmd,1);
-    WLength(bag, 4) = size(bagSet(bag).Wsd,1);
-    WLength(bag, 5) = size(bagSet(bag).Wmg,1);
-    WLength(bag, 6) = size(bagSet(bag).Wsg,1);
-    % PHILength(1) = PHILength + size(bagSet(bag).Wmc,1);
-    % PHILength(1) = PHILength + size(bagSet(bag).Wsc,1);
-    % PHILength(1) = PHILength + size(bagSet(bag).Wmd,1);
-    % PHILength(1) = PHILength + size(bagSet(bag).Wsd,1);
-    % PHILength(1) = PHILength + size(bagSet(bag).Wmg,1);
-    % PHILength(1) = PHILength + size(bagSet(bag).Wsg,1);
+    for m = 1 : 6
+        WLength(bag, m) = size(bagSet(bag).W{m},1)
+    end
 end
-PHILength = sum(WLength, 1);
-PHILength = transpose(PHILength);
-
-load('featureVectors.mat');
-sketchFeaturesMc = Tmc(:,1:2:end,:);
-galleryFeaturesMc = Tmc(:,2:2:end,:);
-sketchFeaturesSc = Tsc(:,1:2:end,:);
-galleryFeaturesSc = Tsc(:,2:2:end,:);
-sketchFeaturesMd = Tmd(:,1:2:end,:);
-galleryFeaturesMd = Tmd(:,2:2:end,:);
-sketchFeaturesSd = Tsd(:,1:2:end,:);
-galleryFeaturesSd = Tsd(:,2:2:end,:);
-sketchFeaturesMg = Tmg(:,1:2:end,:);
-galleryFeaturesMg = Tmg(:,2:2:end,:);
-sketchFeaturesSg = Tsg(:,1:2:end,:);
-galleryFeaturesSg = Tsg(:,2:2:end,:);
-nt = size(Tmc, 2) / 2;
+PHILength = transpose(sum(WLength, 1));
 
 %% Load all testing gallery data and extract features
 
-norGallery = norData(:,:,2:2:datasize * (1-testingRate));%training gallery data
+norGallery = norData(:,:,2:2:end);%all training gallery data
 testingG = norGallery(:,:, gStartIndex:gEndIndex);%gallery to be matched
-testingGalleryFeaturesMc = ...
-    zeros(143 * 236, gEndIndex - gStartIndex + 1);%MLBP with CSDN
-testingGalleryFeaturesSc = ...
-    zeros(143 * 128, gEndIndex - gStartIndex + 1);
-testingGalleryFeaturesMd = ...
-    zeros(143 * 236, gEndIndex - gStartIndex + 1);
-testingGalleryFeaturesSd = ...
-    zeros(143 * 128, gEndIndex - gStartIndex + 1);
-testingGalleryFeaturesMg = ...
-    zeros(143 * 236, gEndIndex - gStartIndex + 1);
-testingGalleryFeaturesSg = ...
-    zeros(143 * 128, gEndIndex - gStartIndex + 1);
-
-for i = 1 : size(testingGalleryFeatures, 2)
-    testingGalleryFeaturesMc(:,i) = ...
-        featureExtraction(testingG(:,:,i),...
-        'MLBP','csdn');
-    testingGalleryFeaturesSc(:,i) = ...
-        featureExtraction(testingG(:,:,i),...
-        'SIFT','csdn');
-    testingGalleryFeaturesMd(:,i) = ...
-        featureExtraction(testingG(:,:,i),...
-        'MLBP','dog');
-    testingGalleryFeaturesSd(:,i) = ...
-        featureExtraction(testingG(:,:,i),...
-        'SIFT','dog');
-    testingGalleryFeaturesMg(:,i) = ...
-        featureExtraction(testingG(:,:,i),...
-        'MLBP','gaussian');
-    testingGalleryFeaturesSg(:,i) = ...
-        featureExtraction(testingG(:,:,i),...
-        'SIFT','gaussian');
-end
-gallery = zeros(nt, size(testingG, 3), 6);%phi of all gallery
-for i = 1 : size(gallery, 2)
-    phiG = similarity(testingGalleryFeaturesMc(:, i),...
-        galleryFeatures);
-    gallery(:,i,1) = ...
-        [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W(:,:,1)';
-    phiG = similarity(testingGalleryFeaturesSc(:, i),...
-        galleryFeatures);
-    gallery(:,i,2) = ...
-        [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W(:,:,2)';
-    phiG = similarity(testingGalleryFeaturesMd(:, i),...
-        galleryFeatures);
-    gallery(:,i,3) = ...
-        [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W(:,:,3)';
-    phiG = similarity(testingGalleryFeaturesSd(:, i),...
-        galleryFeatures);
-    gallery(:,i,4) = ...
-        [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W(:,:,4)';
-    phiG = similarity(testingGalleryFeaturesMg(:, i),...
-        galleryFeatures);
-    gallery(:,i,5) = ...
-        [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W(:,:,5)';
-    phiG = similarity(testingGalleryFeaturesSg(:, i),...
-        galleryFeatures);
-    gallery(:,i,6) = ...
-        [ones(size(phiG,2),1) (phiG - transpose(mu))'] * W(:,:,6)';
+% extract gallery features
+galleryFeatures = cell(6,gallerySize,B);
+for k = gStartIndex : gEndIndex
+    for m = 1 : 6
+        for bag = 1 : B
+            galleryFeatures{m, k, bag} = ...
+                featureExtraction(k*2, m, m, bagSet(bag).kb);
+        end
+    end
 end
 
-%% Choose a probe image
-beginIndex = 1;
-endIndex = 10
+GPHI = cell(6,gallerySize);
+for m = 1 : 6
+    for bag = 1 : B
+        dataset = bagSet(bag).T{m}(:,2:2:end);
+        for k = 1 : gallerySize
+            mu = bagSet(bag).mu;
+            W = bagSet(bag).W{m};
+
+            phi = similarity(galleryFeatures{m, k, bag}, dataset);
+            GPHI{m,k} =[GPHI{m,k},...
+                [ones(size(phi,2),1) (phi - transpose(mu))'] * W'];
+        end
+    end
+end
+
+%% Choose a probe image and do recognition
 result = zeros(endIndex - beginIndex + 1, 2);
 
-for index = beginIndex : endIndex
-%     index = randi([71,100]); %Can be a random image
-    probe = NaN(nt, PHILength, 6);
-    PHIindex = ones(6,1);
-    for bags = 1 : B
-        kb = bagSet(bags).kb;
-        sketchFeatureMc = featureExtraction(index, 'MLBP', 'csdn', kb);
-        sketchFeatureSc = featureExtraction(index, 'SIFT', 'csdn', kb);
-        sketchFeatureMd = featureExtraction(index, 'MLBP', 'dog', kb);
-        sketchFeatureSd = featureExtraction(index, 'SIFT', 'dog', kb);
-        sketchFeatureMg = featureExtraction(index, 'MLBP', 'gaussian', kb);
-        sketchFeatureSg = featureExtraction(index, 'SIFT', 'gaussian', kb);
+S = zeros(gallerySize, 1);% score with all testing gallery image
 
-        phiP = NaN(6,1);
-        phiP(1) = similarity(sketchFeatureMc, bagSet(bags).Tmc(:,1:2:end));
-        phiP(2) = similarity(sketchFeatureSc, bagSet(bags).Tsc(:,1:2:end));
-        phiP(3) = similarity(sketchFeatureMd, bagSet(bags).Tmd(:,1:2:end));
-        phiP(4) = similarity(sketchFeatureSd, bagSet(bags).Tsd(:,1:2:end));
-        phiP(5) = similarity(sketchFeatureMg, bagSet(bags).Tmg(:,1:2:end));
-        phiP(6) = similarity(sketchFeatureSg, bagSet(bags).Tsg(:,1:2:end));
+for m = 1 : 6
+    for g = 1 : gallerySize
+        for bag = 1 : B
+            kb = bagSet(bag).kb;
+            mu = bagSet(bag).mu;
 
-        probe = NaN(nt, size(testingG, 3), 6);%size(testingG, 3)?
-        mu = bagSet(bags).mu;
-        % for m = 1 : 6
-        %     probe(:,k:k + ,m) = ...
-        %         ([ones(size(phiP,2),m) (phiP - transpose(mu))'] * W')';
-        % end
-        probe(:,PHIindex(1):PHIindex(1) + size(bagSet(bag).Wmc),1) = ...
-            ([ones(size(phiP,2),1) (phiP(1) - transpose(bagSet(bag).mu))'] * bagSet(bag).Wmc')';
-        probe(:,PHIindex(2):PHIindex(2) + size(bagSet(bag).Wsc),1) = ...
-            ([ones(size(phiP,2),2) (phiP(2) - transpose(bagSet(bag).mu))'] * bagSet(bag).Wsc')';
-        probe(:,PHIindex(3):PHIindex(3) + size(bagSet(bag).Wmd),1) = ...
-            ([ones(size(phiP,2),3) (phiP(3) - transpose(bagSet(bag).mu))'] * bagSet(bag).Wmd')';
-        probe(:,PHIindex(4):PHIindex(4) + size(bagSet(bag).Wsd),1) = ...
-            ([ones(size(phiP,2),4) (phiP(4) - transpose(bagSet(bag).mu))'] * bagSet(bag).Wsd')';
-        probe(:,PHIindex(5):PHIindex(5) + size(bagSet(bag).Wmg),1) = ...
-            ([ones(size(phiP,2),5) (phiP(5) - transpose(bagSet(bag).mu))'] * bagSet(bag).Wmg')';
-        probe(:,PHIindex(6):PHIindex(6) + size(bagSet(bag).Wsg),1) = ...
-            ([ones(size(phiP,2),6) (phiP(6) - transpose(bagSet(bag).mu))'] * bagSet(bag).Wsg')';
+            sketchFeature = featureExtraction(2*index-1, m, m, bagSet(bag).kb);
+            phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
+            
+            W = bagSet(bag).W{m};
+            probe = [probe, ...
+                ([ones(size(phiP(m),2),m) (phiP(m) - transpose(mu))'] * W')'];
+        end
+        S(g) = S(g) + ...
+            dot(probe(:,:,m), GPHI{m,g})/...
+            ((norm(probe(:,:,m)).*norm(GPHI{m,g})));
     end
+end
 
-    %% Recognition
-    S = zeros(size(gallery,2), 1);% score with all testing gallery image
-    for i = 1 : size(gallery, 2) % calculate all S function
-        S(i,1) = 0;
-        for m = 1 : 6
-            S(i,:) = S(i,:) + ...
+
+for index = beginIndex : endIndex
+    for m = 1 : 6
+        probe = NaN(1, PHILength(m));
+        PHIindex = ones(6,1);
+
+        for bag = 1 : B
+            kb = bagSet(bag).kb;
+            mu = bagSet(bag).mu;
+            for m = 1 : 6
+                sketchFeature = featureExtraction(2*index-1, m, m, bagSet(bag).kb);
+                phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
+                W = bagSet(bag).W{m};
+            end
+            probe(:,PHIindex(m):PHIindex(m) + WLength(bag,m)) = ...
+                    ([ones(size(phiP(m),2),m) (phiP(m) - transpose(mu))'] * W')';
+        end
+        S(i,:) = S(i,:) + ...
                 dot(probe(:,:,m), gallery(:,i))/...
                 ((norm(probe(:,:,m)).*norm(gallery(:, i))));
-        end
     end
 
     [~, indexG] = max(S);
     indexG = indexG + gStartIndex - 1;
 
-    %% Plot recognition result
+    
+end
+
+%% Plot recognition result
     load('CUFS.mat')
     subplot(1,2,1)
     imshow(sketchset(:,:,index));
@@ -178,4 +111,3 @@ for index = beginIndex : endIndex
     imshow(galleryset(:,:,indexG));
     fprintf('Recognition result: Sketch: %d, Gallery: %d\n',index,indexG);
     result(index - beginIndex + 1,:) = [index, indexG];
-end

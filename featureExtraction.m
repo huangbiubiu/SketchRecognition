@@ -8,6 +8,88 @@ function feature = featureExtraction(I, featureType, filterType, kb)
 % Available filter type: 'dog', 'csdn' or 'gaussian'
 % kb is an optional parameter which is a alpha*n dim integer vector.
     
+randomSubspaces = (nargin == 4);
+
+%% Change representation of featureType and filterType
+if featureType == filterType
+    [featureType,filterType] = num2string(featureType);
+end
+
+%% Read result directly
+    if size(I, 1) == 1 && size(I, 2) == 1
+        ftype = [filterType, featureType];
+        load('featureVectors.mat');
+        switch ftype
+            case 'csdnMLBP'
+                if randomSubspaces
+                    for k = 1 : size(kb)
+                        startIndex = (k - 1) * 236 + 1;
+                        TstartIndex = (kb(k) - 1) * 236 + 1;
+                        feature(startIndex:startIndex + 236 - 1) =...
+                            Tmc(TstartIndex:TstartIndex + 236 - 1,I);
+                    end
+                else
+                    feature = Tmc(:,I);
+                end
+            case 'csdnSIFT'
+                if randomSubspaces
+                    for k = 1 : size(kb)
+                        startIndex = (k - 1) * 128 + 1;
+                        TstartIndex = (kb(k) - 1) * 128 + 1;
+                        feature(startIndex:startIndex + 128 - 1) =...
+                            Tsc(TstartIndex:TstartIndex + 128 - 1,I);
+                    end
+                else
+                    feature = Tsc(:,I);
+                end
+            case 'dogMLBP'
+                if randomSubspaces
+                    for k = 1 : size(kb)
+                        startIndex = (k - 1) * 236 + 1;
+                        TstartIndex = (kb(k) - 1) * 236 + 1;
+                        feature(startIndex:startIndex + 236 - 1) =...
+                            Tmd(TstartIndex:TstartIndex + 236 - 1,I);
+                    end
+                else
+                    feature = Tmd(:,I);
+                end
+            case 'dogSIFT'
+                if randomSubspaces
+                    for k = 1 : size(kb)
+                        startIndex = (k - 1) * 128 + 1;
+                        TstartIndex = (kb(k) - 1) * 128 + 1;
+                        feature(startIndex:startIndex + 128 - 1) =...
+                            Tsd(TstartIndex:TstartIndex + 128 - 1,I);
+                    end
+                else
+                    feature = Tsd(:,I);
+                end
+            case 'gaussianMLBP'
+                if randomSubspaces
+                    for k = 1 : size(kb)
+                        startIndex = (k - 1) * 236 + 1;
+                        TstartIndex = (kb(k) - 1) * 236 + 1;
+                        feature(startIndex:startIndex + 236 - 1) =...
+                            Tmg(TstartIndex:TstartIndex + 236 - 1,I);
+                    end
+                else
+                    feature = Tmg(:,I);
+                end
+            case 'gaussianSIFT'
+                if randomSubspaces
+                    for k = 1 : size(kb)
+                        startIndex = (k - 1) * 128 + 1;
+                        TstartIndex = (kb(k) - 1) * 128 + 1;
+                        feature(startIndex:startIndex + 128 - 1) =...
+                            Tsg(TstartIndex:TstartIndex + 128 - 1,I);
+                    end
+                else
+                    feature = Tsg(:,I);
+                end
+        end 
+        return;
+    end
+
 %% Filter    
     switch filterType
     case 'dog'
@@ -23,7 +105,7 @@ function feature = featureExtraction(I, featureType, filterType, kb)
     N = nx * ny;
     
 %% Extract features
-    randomSubspaces = (nargin == 4);
+    
     
     if (randomSubspaces)
         switch featureType
@@ -85,4 +167,32 @@ function feature = featureExtraction(I, featureType, filterType, kb)
 %% Reshape feature matrix to a vector and normalize
     feature = reshape(feature, [], 1);
     feature = feature ./ sum(feature);
+end
+
+
+
+%%---------------------Subfunction------------------------%%
+
+function [featureType, filterType] = num2string(num)
+    switch
+        case 1
+            featureType = 'MLBP';
+            filterType = 'csdn';
+        case 2
+            featureType = 'SIFT';
+            filterType = 'csdn';
+        case 3
+            featureType = 'MLBP';
+            filterType = 'dog';
+        case 4
+            featureType = 'SIFT';
+            filterType = 'dog';
+        case 5
+            featureType = 'MLBP';
+            filterType = 'gaussian';
+        case 6
+            featureType = 'SIFT';
+            filterType = 'gaussian';
+    end
+    
 end
