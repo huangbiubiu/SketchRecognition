@@ -60,9 +60,11 @@ I = imread(path);
 % P2 = exp(L2) ./ repmat(sum(exp(L2),2),[1 2]);
 
 %% Test PCA
+clear;
 load('test.mat');
+mu = NaN(6, nt);
 j = 1;
-[coeff, ~, latent, ~, ~, ~] = pca(transpose(X(:,:,j)));
+[coeff, ~, latent, ~, ~, mu(j,:)] = pca(transpose(X(:,:,j)));
 Xvar = sum(latent);
 for element = 1 : size(latent, 1)
     if sum(latent(1:element))/Xvar > 0.99

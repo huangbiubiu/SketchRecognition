@@ -38,11 +38,13 @@ bagSet = struct('Wmc',num2cell(1:B),'Wsc',num2cell(1:B),...
     'Tmc',num2cell(1:B),'Tsc',num2cell(1:B),...
     'Tmd',num2cell(1:B),'Tsd',num2cell(1:B),...
     'Tmg',num2cell(1:B),'Tsg',num2cell(1:B),...
-    'mu',num2cell(1:B));
+    'mu',num2cell(1:B),'kb',num2cell(1:B));
 for bags = 1 : B
 %Initialize kb
 kb = randperm(N, ceil(alpha * N)); %ceil makes alpha * N is a integer
 kb = kb';% Let kb be a column vector
+
+bagSet(bags).kb = kb;
 %% Extract features
 
 load('norCUFS.mat');
@@ -91,17 +93,17 @@ X(:,:,6) = prototypeRepresentation(Tsg(:,:));
 
 %% Discriminant analysis
 
-mu = NaN(nt, 6);
+mu = NaN(6, nt);
 for j = 1 : 6
     %do PCA
-    [coeff, ~, latent, ~, ~, ~] = pca(transpose(X(:,:,j)));
+    [coeff, ~, latent, ~, ~, mu(j,:)] = pca(transpose(X(:,:,j)));
     Xvar = sum(latent);
     for element = 1 : size(latent, 1)
         if sum(latent(1:element))/Xvar > 0.99
             break;
         end
     end
-    meancenterX = bsxfun(@minus, X(:,:,i), mean(X(:,:,i))); 
+    meancenterX = bsxfun(@minus, transpose(X(:,:,j)), mean(transpose(X(:,:,j)))); 
     score = meancenterX * coeff(:,1:element);
     
     %do LDA
@@ -109,17 +111,17 @@ for j = 1 : 6
     Y = Y(:);
     switch j
         case 1
-            Wmc = LDA(transpose(score), Y);
+            Wmc = LDA(score, Y);
         case 2
-            Wsc = LDA(transpose(score), Y);
+            Wsc = LDA(score, Y);
         case 3
-            Wmd = LDA(transpose(score), Y);
+            Wmd = LDA(score, Y);
         case 4
-            Wsd = LDA(transpose(score), Y);
+            Wsd = LDA(score, Y);
         case 5
-            Wmg = LDA(transpose(score), Y);
+            Wmg = LDA(score, Y);
         case 6
-            Wsg = LDA(transpose(score), Y);
+            Wsg = LDA(score, Y);
         
     end
 end
