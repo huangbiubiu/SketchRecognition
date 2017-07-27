@@ -20,7 +20,7 @@ for bag = 1 : B
     end
 end
 PHILength = transpose(sum(WLength, 1));
-
+load('featureVectors.mat');
 %% Load all testing gallery data and extract features
 
 norGallery = norData(:,:,2:2:end);%all training gallery data
@@ -31,7 +31,7 @@ for k = gStartIndex : gEndIndex
     for m = 1 : 6
         for bag = 1 : B
             galleryFeatures{m, k, bag} = ...
-                featureExtraction(k*2, m, m, bagSet(bag).kb);
+                featureExtraction(k*2, m, m, bagSet(bag).kb, T);
         end
     end
 end
@@ -62,7 +62,7 @@ for m = 1 : 6
             kb = bagSet(bag).kb;
             mu = bagSet(bag).mu;
 
-            sketchFeature = featureExtraction(2*index-1, m, m, bagSet(bag).kb);
+            sketchFeature = featureExtraction(2*index-1, m, m, bagSet(bag).kb, T);
             phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
             
             W = bagSet(bag).W{m};
@@ -85,7 +85,7 @@ for index = beginIndex : endIndex
             kb = bagSet(bag).kb;
             mu = bagSet(bag).mu;
             for m = 1 : 6
-                sketchFeature = featureExtraction(2*index-1, m, m, bagSet(bag).kb);
+                sketchFeature = featureExtraction(2*index-1, m, m, bagSet(bag).kb, T);
                 phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
                 W = bagSet(bag).W{m};
             end

@@ -1,4 +1,4 @@
-function feature = featureExtraction(I, featureType, filterType, kb)
+function feature = featureExtraction(I, featureType, filterType, T, kb)
 % featureExtraction - Extract SIFT or MLBP features
 %
 % Syntax: feature = featureExtraction(I, featureType, filterType, kb)
@@ -8,85 +8,35 @@ function feature = featureExtraction(I, featureType, filterType, kb)
 % Available filter type: 'dog', 'csdn' or 'gaussian'
 % kb is an optional parameter which is a alpha*n dim integer vector.
     
-randomSubspaces = (nargin == 4);
+randomSubspaces = (nargin > 4);
 
 %% Change representation of featureType and filterType
 if featureType == filterType
-    [featureType,filterType] = num2string(featureType);
+    m = featureType;
+    [featureType,filterType] = num2string(m);
 end
 
 %% Read result directly
     if size(I, 1) == 1 && size(I, 2) == 1
         ftype = [filterType, featureType];
-        load('featureVectors.mat');
-        switch ftype
-            case 'csdnMLBP'
-                if randomSubspaces
-                    for k = 1 : size(kb)
-                        startIndex = (k - 1) * 236 + 1;
-                        TstartIndex = (kb(k) - 1) * 236 + 1;
-                        feature(startIndex:startIndex + 236 - 1) =...
-                            Tmc(TstartIndex:TstartIndex + 236 - 1,I);
-                    end
-                else
-                    feature = Tmc(:,I);
-                end
-            case 'csdnSIFT'
-                if randomSubspaces
-                    for k = 1 : size(kb)
-                        startIndex = (k - 1) * 128 + 1;
-                        TstartIndex = (kb(k) - 1) * 128 + 1;
-                        feature(startIndex:startIndex + 128 - 1) =...
-                            Tsc(TstartIndex:TstartIndex + 128 - 1,I);
-                    end
-                else
-                    feature = Tsc(:,I);
-                end
-            case 'dogMLBP'
-                if randomSubspaces
-                    for k = 1 : size(kb)
-                        startIndex = (k - 1) * 236 + 1;
-                        TstartIndex = (kb(k) - 1) * 236 + 1;
-                        feature(startIndex:startIndex + 236 - 1) =...
-                            Tmd(TstartIndex:TstartIndex + 236 - 1,I);
-                    end
-                else
-                    feature = Tmd(:,I);
-                end
-            case 'dogSIFT'
-                if randomSubspaces
-                    for k = 1 : size(kb)
-                        startIndex = (k - 1) * 128 + 1;
-                        TstartIndex = (kb(k) - 1) * 128 + 1;
-                        feature(startIndex:startIndex + 128 - 1) =...
-                            Tsd(TstartIndex:TstartIndex + 128 - 1,I);
-                    end
-                else
-                    feature = Tsd(:,I);
-                end
-            case 'gaussianMLBP'
-                if randomSubspaces
-                    for k = 1 : size(kb)
-                        startIndex = (k - 1) * 236 + 1;
-                        TstartIndex = (kb(k) - 1) * 236 + 1;
-                        feature(startIndex:startIndex + 236 - 1) =...
-                            Tmg(TstartIndex:TstartIndex + 236 - 1,I);
-                    end
-                else
-                    feature = Tmg(:,I);
-                end
-            case 'gaussianSIFT'
-                if randomSubspaces
-                    for k = 1 : size(kb)
-                        startIndex = (k - 1) * 128 + 1;
-                        TstartIndex = (kb(k) - 1) * 128 + 1;
-                        feature(startIndex:startIndex + 128 - 1) =...
-                            Tsg(TstartIndex:TstartIndex + 128 - 1,I);
-                    end
-                else
-                    feature = Tsg(:,I);
-                end
-        end 
+        % load('featureVectors.mat');
+        if randomSubspaces
+            if mod(m, 2) == 0 %even, SIFT
+                featureDim = 128;
+            else %odd, MLBP
+                featureDim = 236;
+            end
+            for k = 1 : size(kb)
+                startIndex = (k - 1) * featureDim + 1;
+                TstartIndex = (kb(k) - 1) * featureDim + 1;
+                feature(startIndex:startIndex + featureDim - 1) =...
+                    T{m}(TstartIndex:TstartIndex + featureDim - 1,I);
+            end
+            
+        else
+            feature = T{m}(:,I);
+        end
+
         return;
     end
 
