@@ -1,5 +1,12 @@
 clear;
 
+%% Set parameters
+trainRate = 0.7;
+B = 30;
+alpha = 0.1;
+N = 143; %the number of face patches
+
+
 %% Read in all training data
 % loadData('CUFS');
 
@@ -25,38 +32,50 @@ clear;
 % clear;
 
 
+bagSet = struct('Wmc',num2cell(1:B),'Wsc',num2cell(1:B),...
+    'Wmd',num2cell(1:B),'Wsd',num2cell(1:B),...
+    'Wmg',num2cell(1:B),'Wsg',num2cell(1:B),...
+    'Tmc',num2cell(1:B),'Tsc',num2cell(1:B),...
+    'Tmd',num2cell(1:B),'Tsd',num2cell(1:B),...
+    'Tmg',num2cell(1:B),'Tsg',num2cell(1:B),...
+    'mu',num2cell(1:B));
+for bags = 1 : B
+%Initialize kb
+kb = randperm(N, ceil(alpha * N)); %ceil makes alpha * N is a integer
+kb = kb';% Let kb be a column vector
 %% Extract features
 
-% load('norCUFS.mat');
-% 
-% trainRate = 0.7;
-% dataSize = size(T, 3) * trainRate;
-% 
-% dataset = T(:,:,1:dataSize);
-% nt = size(dataset,3)/2;
-% 
-% Tmc = zeros(143*236,nt*2);
-% Tsc = zeros(143*128,nt*2);
-% Tmd = zeros(143*236,nt*2);
-% Tsd = zeros(143*128,nt*2);
-% Tmg = zeros(143*236,nt*2);
-% Tsg = zeros(143*128,nt*2);
-% 
-% for i = 1 : 2 * nt
-%     Tmc(:,i) = featureExtraction(dataset(:,:,i), 'MLBP', 'csdn');
-%     Tsc(:,i) = featureExtraction(dataset(:,:,i), 'SIFT', 'csdn');
-%     Tmd(:,i) = featureExtraction(dataset(:,:,i), 'MLBP', 'dog');
-%     Tsd(:,i) = featureExtraction(dataset(:,:,i), 'SIFT', 'dog');
-%     Tmg(:,i) = featureExtraction(dataset(:,:,i), 'MLBP', 'gaussian');
-%     Tsg(:,i) = featureExtraction(dataset(:,:,i), 'SIFT', 'gaussian');
-% end
-% save('featureVectors.mat',...
-%     'Tmc','Tsc',...
-%     'Tmd','Tsd',...
-%     'Tmg','Tsg');
+load('norCUFS.mat');
+
+dataSize = size(T, 3) * trainRate;
+
+dataset = T(:,:,1:dataSize);
+nt = size(dataset,3)/2;
+
+featureLength = 2 * nt;
+patchesLength = size(kb, 1);
+Tmc = zeros(patchesLength*236,featureLength);
+Tsc = zeros(patchesLength*128,featureLength);
+Tmd = zeros(patchesLength*236,featureLength);
+Tsd = zeros(patchesLength*128,featureLength);
+Tmg = zeros(patchesLength*236,featureLength);
+Tsg = zeros(patchesLength*128,featureLength);
+
+for j = 1 : 2 * nt
+    Tmc(:,j) = featureExtraction(dataset(:,:,j), 'MLBP', 'csdn', kb);
+    Tsc(:,j) = featureExtraction(dataset(:,:,j), 'SIFT', 'csdn', kb);
+    Tmd(:,j) = featureExtraction(dataset(:,:,j), 'MLBP', 'dog', kb);
+    Tsd(:,j) = featureExtraction(dataset(:,:,j), 'SIFT', 'dog', kb);
+    Tmg(:,j) = featureExtraction(dataset(:,:,j), 'MLBP', 'gaussian', kb);
+    Tsg(:,j) = featureExtraction(dataset(:,:,j), 'SIFT', 'gaussian', kb);
+end
+save('featureVectors.mat',...
+    'Tmc','Tsc',...
+    'Tmd','Tsd',...
+    'Tmg','Tsg');
 
 %% Represent prototype
-clear;
+% clear;
 load('featureVectors.mat');
 l = size(Tmc, 2);
 nt = int32(l/2);
@@ -68,32 +87,53 @@ X(:,:,3) = prototypeRepresentation(Tmd(:,:));
 X(:,:,4) = prototypeRepresentation(Tsd(:,:));
 X(:,:,5) = prototypeRepresentation(Tmg(:,:));
 X(:,:,6) = prototypeRepresentation(Tsg(:,:));
-save('prototype.mat','X');
+% save('prototype.mat','X');
+
 %% Discriminant analysis
-W = NaN(nt, nt+1, 6);
+
 mu = NaN(nt, 6);
-for i = 1 : 6
-    [~, score, ~, ~, ~, mu(:, i)] = pca(transpose(X(:,:,i)));
-%     meancenterX = bsxfun(@minus, X, mean(X)); %uncertain
-    Y = repmat(1:1:nt/2,2,1);
+for j = 1 : 6
+    %do PCA
+    [coeff, ~, latent, ~, ~, ~] = pca(transpose(X(:,:,j)));
+    Xvar = sum(latent);
+    for element = 1 : size(latent, 1)
+        if sum(latent(1:element))/Xvar > 0.99
+            break;
+        end
+    end
+    meancenterX = bsxfun(@minus, X(:,:,i), mean(X(:,:,i))); 
+    score = meancenterX * coeff(:,1:element);
+    
+    %do LDA
+    Y = repmat(1:1:nt,2,1);
     Y = Y(:);
-    switch i
+    switch j
         case 1
-            Wmc = LDA(transpose(X(:,:,i)), Y);
+            Wmc = LDA(transpose(score), Y);
         case 2
-            Wsc = LDA(transpose(X(:,:,i)), Y);
+            Wsc = LDA(transpose(score), Y);
         case 3
-            Wmd = LDA(transpose(X(:,:,i)), Y);
+            Wmd = LDA(transpose(score), Y);
         case 4
-            Wsd = LDA(transpose(X(:,:,i)), Y);
+            Wsd = LDA(transpose(score), Y);
         case 5
-            Wmg = LDA(transpose(X(:,:,i)), Y);
+            Wmg = LDA(transpose(score), Y);
         case 6
-            Wsg = LDA(transpose(X(:,:,i)), Y);
+            Wsg = LDA(transpose(score), Y);
         
     end
 end
-save('prototype.mat','mu',...
-    'Wmc','Wsc',...
-    'Wsg','Wmg',...
-    'Wsd','Wmd');
+bagSet(bags).Wmc = Wmc;
+bagSet(bags).Wsc = Wsc;
+bagSet(bags).Wmd = Wmd;
+bagSet(bags).Wsd = Wsd;
+bagSet(bags).Wmg = Wmg;
+bagSet(bags).Wsg = Wsg;
+bagSet(bags).mu = mu;
+
+% save('prototype.mat','mu',...
+%     'Wmc','Wsc',...
+%     'Wsg','Wmg',...
+%     'Wsd','Wmd');
+end
+save('prototype.mat','bagSet');

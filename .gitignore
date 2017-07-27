@@ -6,6 +6,8 @@ sift/temp.key
 
 #temp files in matlab
 temp.jpg
+*.asv
+test.mat
 
 #Face detection via C#
 FaceDetection/

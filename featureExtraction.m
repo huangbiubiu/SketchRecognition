@@ -28,12 +28,12 @@ function feature = featureExtraction(I, featureType, filterType, kb)
     if (randomSubspaces)
         switch featureType
         case 'MLBP'
-            feature = zeros(236,size(kb));
+            feature = zeros(236,size(kb,1));
         case 'SIFT'
-            feature = zeros(128,size(kb));
+            feature = zeros(128,size(kb,1));
         end
         
-        for i = 1 : size(kb)
+        for i = 1 : size(kb,1)
             switch featureType
             case 'MLBP'
                 feature(:,i) = transpose(mlbp(patches(:,:,kb(i))));
