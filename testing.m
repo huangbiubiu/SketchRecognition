@@ -1,9 +1,9 @@
 clear;
 %% Set parameters
-gStartIndex = 1; %for gallery
-gEndIndex = 10;
-beginIndex = 1; %for sketch
-endIndex = 10;
+gStartIndex = 71; %for gallery
+gEndIndex = 100;
+beginIndex = 71; %for sketch
+endIndex = 100;
 gallerySize = gEndIndex - gStartIndex + 1;
 B = 30;
 alpha = 0.1;
@@ -30,7 +30,7 @@ galleryFeatures = cell(6,gallerySize,B);
 for k = gStartIndex : gEndIndex
     for m = 1 : 6
         for bag = 1 : B
-            galleryFeatures{m, k, bag} = ...
+            galleryFeatures{m, k - gStartIndex + 1, bag} = ...
                 featureExtraction(k*2, m, m, bagSet(bag).kb, T);
         end
     end
@@ -52,10 +52,10 @@ for m = 1 : 6
 end
 
 %% Choose a probe image and do recognition
-index = 5; %index of probe to be matched
+result = zeros(endIndex - beginIndex + 1, 2);
+for index = beginIndex:endIndex; %index of probe to be matched
 
 %initialization
-result = zeros(endIndex - beginIndex + 1, 2);
 S = zeros(gallerySize, 6);% score with all testing gallery image
 
 for g = 1 : gallerySize
@@ -100,3 +100,7 @@ indexG = indexG + gStartIndex - 1;
     imshow(galleryset(:,:,indexG));
     fprintf('Recognition result: Sketch: %d, Gallery: %d\n',index,indexG);
     result(index - beginIndex + 1,:) = [index, indexG];
+end
+
+%% Compute accuracy
+accuracy = sum(result(:,1) == result(:,2)) / size(result,1);
