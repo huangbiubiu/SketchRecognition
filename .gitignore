@@ -11,3 +11,7 @@ test.mat
 
 #Face detection via C#
 FaceDetection/
+
+#obsolete SIFT algorithm
+sift/
+sift_zheng/

@@ -1,28 +1,28 @@
 clear;
 
+run('sift_vlfeat/toolbox/vl_setup');
+
 load('norCUFS.mat');
 dataset = T;
 
 nt = size(T, 3);
 datasize = nt;
 patchesLength = 143;
-Tmc = zeros(patchesLength*236,datasize);
-Tsc = zeros(patchesLength*128,datasize);
-Tmd = zeros(patchesLength*236,datasize);
-Tsd = zeros(patchesLength*128,datasize);
-Tmg = zeros(patchesLength*236,datasize);
-Tsg = zeros(patchesLength*128,datasize);
-
-for j = 1 : nt
-    Tmc(:,j) = featureExtraction(dataset(:,:,j), 'MLBP', 'csdn');
-    Tsc(:,j) = featureExtraction(dataset(:,:,j), 'SIFT', 'csdn');
-    Tmd(:,j) = featureExtraction(dataset(:,:,j), 'MLBP', 'dog');
-    Tsd(:,j) = featureExtraction(dataset(:,:,j), 'SIFT', 'dog');
-    Tmg(:,j) = featureExtraction(dataset(:,:,j), 'MLBP', 'gaussian');
-    Tsg(:,j) = featureExtraction(dataset(:,:,j), 'SIFT', 'gaussian');
+T = cell(6,1);
+for m = 1 : 6
+    if mod(m, 2) == 0
+        % SIFT
+        T{m} = zeros(patchesLength*128,datasize);
+    else
+        T{m} = zeros(patchesLength*236,datasize);
+    end
 end
 
-save('featureVectors.mat',...
-    'Tmc','Tsc',...
-    'Tmd','Tsd',...
-    'Tmg','Tsg');
+for j = 1 : nt
+    fprintf('%d / %d\n',j,nt);
+    for m = 1 : 6
+        T{m}(:,j) = featureExtraction(dataset(:,:,j),m,m);
+    end
+end
+
+save('featureVectors.mat','T');

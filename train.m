@@ -32,36 +32,55 @@ N = 143; %the number of face patches
 % clear;
 
 
-bagSet = struct('W',num2cell(1:B),'T',num2cell(1:B),...
-    'mu',num2cell(1:B),'kb',num2cell(1:B));
+% bagSet = struct('W',num2cell(1:B),'T',num2cell(1:B),...
+%     'mu',num2cell(1:B),'kb',num2cell(1:B));
+bagSet = struct('W',[],'T',[],...
+    'mu',[],'kb',[]);
+% bagSet = struct;
 for bag = 1 : B
-    %% Initialize kb
-    kb = randperm(N, ceil(alpha * N)); %ceil makes alpha * N is a integer
-    kb = kb';% Let kb be a column vector
-
-    bagSet(bag).kb = kb;
-
-    %% Extract features
-
+    %% Progress
+        fprintf('Bag %d / %d.\n', bag, B);
+    %% Load data
     load('norCUFS.mat');
 
     dataSize = size(T, 3) * trainRate;
 
     dataset = T(:,:,1:dataSize);
     nt = size(dataset,3)/2;
+        
+    %% Initialization
+    
+    %Initilize kb
+    kb = randperm(N, ceil(alpha * N)); %ceil makes alpha * N is a integer
+    kb = kb';% Let kb be a column vector
 
+    bagSet(bag).kb = kb;
+    
+    %Initilize T
+    bagSet(bag).T = cell(6,1);
+    for m = 1 : 6
+        patchNum = size(kb,1);
+        if mod(m, 2) == 0 %SIFT
+            fL = 128;
+        else
+            fL = 236;
+        end
+        bagSet(bag).T{m} = NaN(fL*patchNum,2*nt);
+    end
+    
+    %% Extract features
+
+    
+
+    load('featureVectors.mat');
+    preExtractedFeature = T;
     for j = 1 : 2 * nt
-        bagSet(bag).T{1} = featureExtraction(j, 'MLBP', 'csdn', kb);
-        bagSet(bag).T{2} = featureExtraction(j, 'SIFT', 'csdn', kb);
-        bagSet(bag).T{3} = featureExtraction(j, 'MLBP', 'dog', kb);
-        bagSet(bag).T{4} = featureExtraction(j, 'SIFT', 'dog', kb);
-        bagSet(bag).T{5} = featureExtraction(j, 'MLBP', 'gaussian', kb);
-        bagSet(bag).T{6} = featureExtraction(j, 'SIFT', 'gaussian', kb);
+        for m = 1 : 6
+            bagSet(bag).T{m}(:,j) = featureExtraction(j,m,m,kb,preExtractedFeature);
+        end
     end
 
     %% Represent prototype
-    l = size(Tmc, 2);
-    nt = int32(l/2);
     X = NaN(nt, 2*nt,6);
 
     for m = 1 : 6
@@ -71,6 +90,7 @@ for bag = 1 : B
     %% Discriminant analysis
 
     mu = NaN(6, nt);
+    W = cell(6,1);
     for j = 1 : 6
         %do PCA
         [coeff, ~, latent, ~, ~, mu(j,:)] = pca(transpose(X(:,:,j)));
@@ -86,7 +106,6 @@ for bag = 1 : B
         %do LDA
         Y = repmat(1:1:nt,2,1);
         Y = Y(:);
-        W = cell(6,1);
         W{j} = LDA(score, Y);
     end
     bagSet(bag).W = W;

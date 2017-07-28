@@ -1,4 +1,4 @@
-function feature = featureExtraction(I, featureType, filterType, T, kb)
+function feature = featureExtraction(I, featureType, filterType, kb, T)
 % featureExtraction - Extract SIFT or MLBP features
 %
 % Syntax: feature = featureExtraction(I, featureType, filterType, kb)
@@ -11,7 +11,8 @@ function feature = featureExtraction(I, featureType, filterType, T, kb)
 randomSubspaces = (nargin > 4);
 
 %% Change representation of featureType and filterType
-if featureType == filterType
+
+if isnumeric(featureType) %number presentation
     m = featureType;
     [featureType,filterType] = num2string(m);
 end
@@ -26,11 +27,13 @@ end
             else %odd, MLBP
                 featureDim = 236;
             end
+            feature = NaN(featureDim*size(kb,1),1);
             for k = 1 : size(kb)
                 startIndex = (k - 1) * featureDim + 1;
                 TstartIndex = (kb(k) - 1) * featureDim + 1;
                 feature(startIndex:startIndex + featureDim - 1) =...
                     T{m}(TstartIndex:TstartIndex + featureDim - 1,I);
+                
             end
             
         else
@@ -124,7 +127,7 @@ end
 %%---------------------Subfunction------------------------%%
 
 function [featureType, filterType] = num2string(num)
-    switch
+    switch(num)
         case 1
             featureType = 'MLBP';
             filterType = 'csdn';

@@ -1,10 +1,11 @@
 clear;
-path = '..\Database\CUFS\sketch\f-039-01-sz1.jpg';
-I = imread(path);
+% path = '..\Database\CUFS\sketch\f-039-01-sz1.jpg';
+% I = imread(path);
 % I = rgb2gray(I);
 %% Image normalizer
 
-% load('norCUFS.mat');
+load('norCUFS.mat');
+I = T(:,:,5);
 % index = randi([1,100]);
 % 
 % subplot(1,2,1)
@@ -29,11 +30,12 @@ I = imread(path);
 
 %% Represent image to patches
 
-% [patches,nx,ny] = patching(I,16);
+[patches,nx,ny] = patching(I,16);
+sift(patches(:,:,5))
 % img = combinePatch(patches, nx, ny);
 % imshow(img)
-
-%% Extract features
+% 
+% % Extract features
 % siftFeatures = extractLBPFeatures(patches(:,:,1));
 % [siftFeatures,~] = sift(I);
 % mlbpFeatures = mlbp(I);
@@ -60,19 +62,19 @@ I = imread(path);
 % P2 = exp(L2) ./ repmat(sum(exp(L2),2),[1 2]);
 
 %% Test PCA
-clear;
-load('test.mat');
-mu = NaN(6, nt);
-j = 1;
-[coeff, ~, latent, ~, ~, mu(j,:)] = pca(transpose(X(:,:,j)));
-Xvar = sum(latent);
-for element = 1 : size(latent, 1)
-    if sum(latent(1:element))/Xvar > 0.99
-        break;
-    end
-end
-meancenterX = bsxfun(@minus, transpose(X(:,:,j)), mean(transpose(X(:,:,j)))); 
-score = meancenterX * coeff(:,1:element);
-Y = repmat(1:1:nt,2,1);
-Y = Y(:);
-Wmc = LDA(score, Y);
+% clear;
+% load('test.mat');
+% mu = NaN(6, nt);
+% j = 1;
+% [coeff, ~, latent, ~, ~, mu(j,:)] = pca(transpose(X(:,:,j)));
+% Xvar = sum(latent);
+% for element = 1 : size(latent, 1)
+%     if sum(latent(1:element))/Xvar > 0.99
+%         break;
+%     end
+% end
+% meancenterX = bsxfun(@minus, transpose(X(:,:,j)), mean(transpose(X(:,:,j)))); 
+% score = meancenterX * coeff(:,1:element);
+% Y = repmat(1:1:nt,2,1);
+% Y = Y(:);
+% Wmc = LDA(score, Y);
