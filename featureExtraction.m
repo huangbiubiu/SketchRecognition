@@ -99,13 +99,14 @@ end
                 feature(:,i) = transpose(mlbp(patches(:,:,i)));
             case 'SIFT'
                 [f,~] = sift(patches(:,:,i));
-                num = size(f,1);
-                if num == 0
-                    f = zeros(1, 128);
-                else
-                    f = sum(f, 1);
-                end
-                feature(:,i) = transpose(f);
+                f = sum(f, 2);
+%                 num = size(f,1);
+%                 if num == 0
+%                     f = zeros(1, 128);
+%                 else
+%                     f = sum(f, 1);
+%                 end
+                feature(:,i) = f;
                 % k = k + num;
             end
         end

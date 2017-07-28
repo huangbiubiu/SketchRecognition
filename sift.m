@@ -8,6 +8,8 @@ function [descriptors, locs] = sift(image)
 %         [~, descriptors, locs] = sift(image);
 %     cd ..
     frames = size(image)/2;
-    frames = [frames 1 0];
-    [locs, descriptors] = vl_sift(im2single(image), 'frames', frames');
+    frames = [frames(2) frames(1) 1 0];
+    [locs, descriptors] = vl_sift(im2single(image),...
+        'frames', frames',...
+        'Orientations');
 end
