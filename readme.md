@@ -1,5 +1,3 @@
-
-
 # A Heterogeneous Face Recognition System
 
 ## Introduction
