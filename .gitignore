@@ -15,3 +15,6 @@ FaceDetection/
 #obsolete SIFT algorithm
 sift/
 sift_zheng/
+
+#binary files
+*.mat

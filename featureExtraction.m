@@ -14,6 +14,10 @@ randomSubspaces = (nargin > 4);
 
 if isnumeric(featureType) %number presentation
     m = featureType;
+    if featureType ~= filterType
+        throw(MException('testing: illegal arguments',...
+            'featureType should be equal to filterType when use numberic representation \n'));
+    end
     [featureType,filterType] = num2string(m);
 end
 

@@ -8,7 +8,14 @@ This is a command-line implementation of [1]. Database is [CUHK student data set
 According to [1], this algorithm can be used in variety of heterogeneous face, including near-infrared and thermal infrared, although only sketch face database is used to test, 
 
 ## Run
-This system requires a MATLAB environment.
+
+### Environment
+This system requires a MATLAB&trade; environment. Toolbox listed below is required:
+- MATLAB&trade; [Image Processing Toolbox](https://www.mathworks.com/products/image.html)
+- MATLAB&trade; [Computer Vision System Toolbox](https://www.mathworks.com/products/computer-vision.html)
+
+In image normalization step, an vaild [Microsoft Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/) [Computer Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) subscription is required for eye detection.
+
 
 ### Pre-process
 Pre-processing includes 2 steps:
