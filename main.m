@@ -16,5 +16,6 @@ probe = dataset(:,:,1:2:end);
 gallery = dataset(:,:,2:2:end);
 
 T = extractAllFeatures(gallery, 'display', true);
+GPHI = prepareGalleryData(bagSet, gallery, T);
 
-result = testing(probe, bagSet, gallery, T);
+result = testing(probe, bagSet, GPHI);
