@@ -92,7 +92,7 @@ function bagSet = train(dataset, preExtractedFeature, varargin)
         bagSet(bag).mu = mu;
     end
     if savetodisk
-        save('prototype.mat','bagSet');
+        save('trainingResult.mat','bagSet');
     end
 end
 

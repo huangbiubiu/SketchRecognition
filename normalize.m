@@ -5,10 +5,11 @@ function imgSet = normalize(I, overlap)
         overlap = 16;
     end
     
-    imgSet = uint8(zeros(224,192,3));
+    imgSet = uint8(zeros(224,192));
     
     for index = 1 : size(I, 3)
         img = I(:,:,index);
+                
         if (size(img, 1) ~= 250 || size(img, 2) ~= 200)
             %% Rotate the image
             eyePosition = eyeDetection(I);

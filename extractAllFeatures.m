@@ -34,6 +34,6 @@ function T = extractAllFeatures(dataset, varargin)
     end
     
     if p.Results.savetodisk
-        save('featureVectors.mat','T');
+        save('trainingFeatureVectors.mat','T');
     end
 end    

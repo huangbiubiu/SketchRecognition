@@ -8,14 +8,12 @@ T = extractAllFeatures(dataset, 'display', true);
 bagSet = train(dataset, T, 'display', true);
 
 %% Load testing data
-% load('temp.mat')
-dataset = loadData('dataset\testing\');
-dataset = normalize(dataset);
-
-probe = dataset(:,:,1:2:end);
-gallery = dataset(:,:,2:2:end);
-
+gallerySet = loadData('dataset\testing\photos', false);
+gallerySet = normalize(gallerySet);
 T = extractAllFeatures(gallery, 'display', true);
 GPHI = prepareGalleryData(bagSet, gallery, T);
 
+%% Testing
+probe = loadData('dataset\testing\sketches', false);
+probe = normalize(probe);
 result = testing(probe, bagSet, GPHI);

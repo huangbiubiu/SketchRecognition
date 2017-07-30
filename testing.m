@@ -1,6 +1,6 @@
 function result = testing(dataset, bagSet, GPHI)
     % Set parameters
-    gallerySize = size(gallery, 3);
+    gallerySize = size(GPHI, 2);
     datasize = size(dataset, 3);
     B = 30;
     alpha = 0.1;
@@ -27,7 +27,6 @@ function result = testing(dataset, bagSet, GPHI)
             for m = 1:6
                     probe = [];
                 for bag = 1 : B
-                    tic;
                     kb = bagSet(bag).kb;
                     mu = bagSet(bag).mu(m,:);
                     sketchFeature = featureExtraction(index, m, m, bagSet(bag).kb,testingPreExtractedFeature);
@@ -36,8 +35,6 @@ function result = testing(dataset, bagSet, GPHI)
                     W = bagSet(bag).W{m};
                     probe = [probe, phiP' * W];
                     
-                    extrtime = toc;
-                    fprintf('Feature Extracting time: %d \n',extrtime);
 
                 end
                 S(g,m) = S(g,m) + ...
