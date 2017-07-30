@@ -35,9 +35,6 @@ function T = loadData(databasePath)
 
     T(:,:,1:2:end) = sketchset;
     T(:,:,2:2:end) = galleryset;
-    save(strcat('nor',database,p,'.mat'),...
-        'T', 'sketchset', 'galleryset');
-
 end
 
 %----------------------Subfunctions------------------%

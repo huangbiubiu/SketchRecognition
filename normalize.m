@@ -1,12 +1,14 @@
-function img = normalize(I, overlap)
+function imgSet = normalize(I, overlap)
     
     %default parameters
     if nargin == 1
         overlap = 16;
     end
-
-    img = I;
+    
+    imgSet = uint8(zeros(224,192,3));
+    
     for index = 1 : size(I, 3)
+        img = I(:,:,index);
         if (size(img, 1) ~= 250 || size(img, 2) ~= 200)
             %% Rotate the image
             eyePosition = eyeDetection(I);
@@ -40,9 +42,8 @@ function img = normalize(I, overlap)
         ymod = mod(size(img,2),2*overlap);
         img = img(1:size(img,1)-xmod,1:size(img,2)-ymod);
         
-    end
-
-    
+        imgSet(:,:,index) = img;
+    end   
     
     
 

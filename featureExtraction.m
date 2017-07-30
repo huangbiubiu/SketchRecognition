@@ -8,7 +8,7 @@ function feature = featureExtraction(I, featureType, filterType, kb, T)
 % Available filter type: 'dog', 'csdn' or 'gaussian'
 % kb is an optional parameter which is a alpha*n dim integer vector.
     
-randomSubspaces = (nargin > 4);
+randomSubspaces = (nargin >= 4);
 
 %% Change representation of featureType and filterType
 
@@ -82,7 +82,7 @@ end
                 if num == 0
                     f = zeros(1, 128);
                 else
-                    f = sum(f, 1);
+                    f = sum(f, 2);
                 end
                 feature(:,i) = transpose(f);
                 % k = k + num;

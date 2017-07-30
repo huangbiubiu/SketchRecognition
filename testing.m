@@ -1,6 +1,6 @@
 function result = testing(dataset, bagSet, gallery, preExtractedFeature)
     % arguments checking
-    if size(gallery, 3) ~= size(preExtractedFeature, 3)
+    if size(gallery, 3) ~= size(preExtractedFeature{1}, 2)
         throw(MException('testing: illegal arguments',...
             'the gallery and preExtractedFeature should be same size'));
     end
@@ -35,33 +35,38 @@ function result = testing(dataset, bagSet, gallery, preExtractedFeature)
     for m = 1 : 6
         for k = 1 : gallerySize
             for bag = 1 : B
-                dataset = bagSet(bag).T{m}(:,2:2:end);
+                galleryFeatureSet = bagSet(bag).T{m}(:,2:2:end);
                 W = bagSet(bag).W{m};
-                phi = similarity(galleryFeatures{m, k, bag}, dataset);
+                phi = similarity(galleryFeatures{m, k, bag}, galleryFeatureSet);
                 GPHI{m, k} = [GPHI{m, k}, phi' * W];
             end
         end
     end
     
+    % pre-extract all sketch features
+    testingPreExtractedFeature = ...
+        extractAllFeatures(dataset, 'display', true);
+    
     % Recognition
     result = zeros(datasize, 2);
     for index = 1 : datasize       
         %initialization
+        fprintf('Recognition: %d / %d\n',index,datasize);
         S = zeros(gallerySize, 6);% score with all testing gallery image
-
         for g = 1 : gallerySize
             for m = 1:6
                     probe = [];
                 for bag = 1 : B
+                    
                     kb = bagSet(bag).kb;
                     mu = bagSet(bag).mu(m,:);
-
-                    sketchFeature = featureExtraction(dataset(:,:,index), m, m, bagSet(bag).kb);
+                    sketchFeature = featureExtraction(index, m, m, bagSet(bag).kb,testingPreExtractedFeature);
                     phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
 
                     W = bagSet(bag).W{m};
                     probe = [probe, phiP' * W];
-
+                    
+                   
                 end
                 S(g,m) = S(g,m) + ...
                     dot(probe, GPHI{m,g})/...
@@ -80,7 +85,7 @@ function result = testing(dataset, bagSet, gallery, preExtractedFeature)
         [~, indexG] = max(S);
         
         result(index,:) = [index, indexG];
-
+        fprintf('Result: %d %d',index, indexG);
     end
     
 end

@@ -24,9 +24,9 @@ function T = extractAllFeatures(dataset, varargin)
         end
     end
     
-    for j = 1 : nt
+    for j = 1 : 2 * nt
         if p.Results.display
-            fprintf('%d / %d\n',j,nt);
+            fprintf('%d / %d\n',j,2 * nt);
         end        
         for m = 1 : 6
             T{m}(:,j) = featureExtraction(dataset(:,:,j),m,m);
