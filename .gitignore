@@ -1,3 +1,6 @@
+#keep vlfeat complete
+!sift_vlfeat/
+
 #testing image files
 sift/*.pgm
 
@@ -18,6 +21,3 @@ sift_zheng/
 
 #binary files
 *.mat
-
-#dataset
-dataset/

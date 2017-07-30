@@ -2,13 +2,13 @@
 dataset = loadData('dataset\training\');
 dataset = normalize(dataset);
 
-% T = extractAllFeatures(dataset, 'display', true);
+T = extractAllFeatures(dataset, 'display', true);
 
 %% Training
-% bagSet = train(dataset, T, 'display', true);
+bagSet = train(dataset, T, 'display', true);
 
 %% Load testing data
-load('temp.mat')
+% load('temp.mat')
 dataset = loadData('dataset\testing\');
 dataset = normalize(dataset);
 
