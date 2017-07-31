@@ -15,32 +15,33 @@ function result = testing(dataset, bagSet, GPHI)
     
     % pre-extract all sketch features
     testingPreExtractedFeature = ...
-        extractAllFeatures(dataset, 'display', true);
+        extractAllFeatures(dataset, 'display', false);
     
     % Recognition
     result = zeros(datasize, 2);
-    for index = 1 : datasize       
+    for index = 1 : datasize
         %initialization
-        fprintf('Recognition: %d / %d\n',index,datasize);
+%         fprintf('Recognition: %d / %d\n',index,datasize);
         S = zeros(gallerySize, 6);% score with all testing gallery image
+        probe = cell(6,1);
+        for m = 1 : 6
+            probe{m} = [];
+            for bag = 1 : B
+                mu = bagSet(bag).mu(m,:);
+                sketchFeature = featureExtraction(index, m, m, bagSet(bag).kb,testingPreExtractedFeature);
+                phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
+
+                W = bagSet(bag).W{m};
+                probe{m} = [probe{m}, phiP' * W];
+
+            end
+        end
         for g = 1 : gallerySize
             for m = 1:6
-                    probe = [];
-                for bag = 1 : B
-                    kb = bagSet(bag).kb;
-                    mu = bagSet(bag).mu(m,:);
-                    sketchFeature = featureExtraction(index, m, m, bagSet(bag).kb,testingPreExtractedFeature);
-                    phiP = similarity(sketchFeature, bagSet(bag).T{m}(:,1:2:end));
-
-                    W = bagSet(bag).W{m};
-                    probe = [probe, phiP' * W];
-                    
-
-                end
+                
                 S(g,m) = S(g,m) + ...
-                    dot(probe, GPHI{m,g})/...
-                    (norm(probe).*norm(GPHI{m,g}));
-        %         fprintf('%d. g = %d, m = %d.\n',(norm(probe).*norm(GPHI{m,g})),g,m);
+                    dot(probe{m}, GPHI{m,g})/...
+                    (norm(probe{m}).*norm(GPHI{m,g}));
             end
         end
 
@@ -54,7 +55,8 @@ function result = testing(dataset, bagSet, GPHI)
         [~, indexG] = max(S);
         
         result(index,:) = [index, indexG];
-        fprintf('Result: %d %d',index, indexG);
+%         fprintf('Result: %d %d',index, indexG);
+        
     end
     
 end

@@ -57,12 +57,17 @@ In this step, function `testing` was applied to the testing probe set, to get th
 
 100 images in the database were used for testing the accuracy of the algorithm.
 
-## Experiment result
+## Performance
+### Accuracy
 The accuracy of the latest version is **81%**.
 
-	Note
-    
-    Due to the random subspace approach, this accuracy result can't be promised in each experiment. A large scale experiment is running to help us know the average performance of this algorithm.
+*Note*:
+Due to the random subspace approach, this accuracy result can't be promised in each experiment.
+### Time Performance
+CPU|Average Time(seconds/sketch)
+:---:|:------------:
+Intel&reg; Core&trade; i5-4200M 2.50GHz|2.06
+Intel&reg; Xeon&reg; E5-2673 v3 2.40GHz|2.20
 
 ## Differences from the paper
 1. The combination SIFT and DoG are abandoned due to an all zero feature descriptor vector it will cause.

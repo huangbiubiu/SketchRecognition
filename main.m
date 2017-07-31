@@ -1,19 +1,31 @@
-%% Load training data and extract features
-dataset = loadData('dataset\training\');
-dataset = normalize(dataset);
+% %% Load training data and extract features
+% trainingdataset = loadData('dataset\training\');
+% trainingdataset = normalize(trainingdataset);
+% 
+% traindatafeatures = extractAllFeatures(trainingdataset, 'display', true);
+% save('trainingdataset.mat','trainingdataset','traindatafeatures');
+% 
+% %% Training
+% bagSet = train(trainingdataset, traindatafeatures, 'display', true);
+% save('trainingResult.mat','bagSet');
 
-T = extractAllFeatures(dataset, 'display', true);
-
-%% Training
-bagSet = train(dataset, T, 'display', true);
-
-%% Load testing data
-gallerySet = loadData('dataset\testing\photos', false);
-gallerySet = normalize(gallerySet);
-T = extractAllFeatures(gallery, 'display', true);
-GPHI = prepareGalleryData(bagSet, gallery, T);
-
+% %% Load testing data
+% gallerySet = loadData('dataset\testing\photos', false);
+% gallerySet = normalize(gallerySet);
+% T = extractAllFeatures(gallerySet, 'display', true);
+% GPHI = prepareGalleryData(bagSet, gallerySet, T);
+% save('GPhi.mat','GPHI','gallerySet');
 %% Testing
+load('trainingResult.mat');
+load('GPhi.mat');
 probe = loadData('dataset\testing\sketches', false);
 probe = normalize(probe);
-result = testing(probe, bagSet, GPHI);
+
+timespan = [];
+for k = 1 : 10
+    tic;
+    result = testing(probe(:,:,1), bagSet, GPHI);
+    timesp = toc;
+    timespan = [timespan, timesp];
+end
+
