@@ -37,6 +37,7 @@ A ugly GUI is implemented in `sketch.mlapp` with MATLAB native GUI library.
     4. Related code of this step is in `train.m`.
 
 2. Extract all features from each image
+
     *Technical details*
     - The motivation of this step is to speed up the training step and testing step. 
     - According to [1], 3 filters and 2 feature descriptors are applied to the image, which are *Difference of Gaussian* (dog), *Center-Surround Divisive Normalization* (csdn), *Gaussian smoothing filter* (gaussian) and *Scale-invariant Feature Transform* (SIFT), *Modified Local Binary Patterns* (MLBP), respectively.
