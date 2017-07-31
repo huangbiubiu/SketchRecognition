@@ -68,6 +68,7 @@ end
 %----------------------Subfunctions------------------%
 
 function filename = ganame2skname(galleryFileName)
-    [~,filename,~] = fileparts(galleryFileName);
-    filename = strcat(filename, '-sz1.jpg');
+    % [~,filename,~] = fileparts(galleryFileName);
+    % filename = strcat(filename, '-sz1.jpg');
+    filename = galleryFileName;
 end

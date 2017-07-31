@@ -1,4 +1,4 @@
-function result = testing(dataset, bagSet, GPHI)
+function result = testing(dataset, bagSet, GPHI, galleryFeatures)
     % Set parameters
     gallerySize = size(GPHI, 2);
     datasize = size(dataset, 3);
@@ -21,9 +21,10 @@ function result = testing(dataset, bagSet, GPHI)
     result = zeros(datasize, 2);
     for index = 1 : datasize
         %initialization
-%         fprintf('Recognition: %d / %d\n',index,datasize);
-        S = zeros(gallerySize, 6);% score with all testing gallery image
-        probe = cell(6,1);
+        
+        % P-RS
+        S = zeros(gallerySize, 12);% score with all testing gallery image
+        probe = cell(6);
         for m = 1 : 6
             probe{m} = [];
             for bag = 1 : B
@@ -37,19 +38,34 @@ function result = testing(dataset, bagSet, GPHI)
             end
         end
         for g = 1 : gallerySize
-            for m = 1:6
-                
+            for m = 1:6                
                 S(g,m) = S(g,m) + ...
                     dot(probe{m}, GPHI{m,g})/...
                     (norm(probe{m}).*norm(GPHI{m,g}));
             end
         end
 
+        
+        
+        %D-RS
+        for g = 1 : gallerySize
+            for m = 1 : 6
+                for bag = 1 : B
+                    sketchFeature = featureExtraction(index, m, m, bagSet(bag).kb,testingPreExtractedFeature);
+                    galleryF = featureExtraction(g, m, m, bagSet(bag).kb, galleryFeatures);
+                    S(g,m + 6) = S(g,m + 6) + ...
+                        dot(sketchFeature,galleryF)/(norm(sketchFeature)*norm(galleryF));
+                    
+                end
+            end
+        end
+        
         % normalize S
-        for m = 1 : 6
+        for m = 1 : size(S, 2)
             S(:,m) = (S(:,m) - min(S(:,m))) / (max(S(:,m)) - min(S(:,m)));
         end
-        S = S(:,[1:3 5:6]);%abandon the combination of SIFT and DoG
+        
+        S = S(:,[1:3 5:9 11:12]);%abandon the combination of SIFT and DoG
         S = sum(S, 2);
 
         [~, indexG] = max(S);
