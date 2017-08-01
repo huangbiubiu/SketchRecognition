@@ -46,7 +46,7 @@ A ugly GUI is implemented in `sketch.mlapp` with MATLAB native GUI library.
 Use `train` to train data, and return a discriminant matrix *W* using LDA.
 
 *Technical details*<br>
-As mentioned above, we use CUHK for training. More specificly, we use 88 faces for training, which is cropped. Our cropped algorithm wasn't applied to face images because there are already cropped sketches and photos in CUHK dataset.
+As mentioned above, we use CUHK for training. More specificly, 88 faces were used for training, which is cropped. Our cropped algorithm wasn't applied to face images because there are already cropped sketches and photos in CUHK dataset.
 
 #### Load testing data
 In this step, testing gallery was loaded and features were extracted. The motivation of this step is as same as the first step.
@@ -66,9 +66,13 @@ Database|Accuracy
 CUHK testing databse|**85%**<sup>1,3</sup>
 PRIP|**27.5%**<sup>1,4</sup>
 
+#### Rank-N accuracy
+![avatar](/img/rankN.svg)
 
 *Note*:<br>
-Due to the random subspace approach, this accuracy result can't be promised in each experiment.
+1. Due to the random subspace approach, this accuracy result can't be promised in each experiment.
+2. Each experiment are trained by CUHK training dataset.
+
 ### Time Performance
 CPU|Average Time(seconds/sketch)
 :---:|:------------:
