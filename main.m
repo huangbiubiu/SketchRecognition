@@ -10,16 +10,17 @@
 % save('trainingResult.mat','bagSet');
 
 % %% Load testing data
-% gallerySet = loadData('dataset\testing\photos', false);
+% load('trainingResult.mat');
+% gallerySet = loadData('PRIP\photos', false);
 % gallerySet = normalize(gallerySet);
 % T = extractAllFeatures(gallerySet, 'display', true);
 % GPHI = prepareGalleryData(bagSet, gallerySet, T);
-% save('GPhi.mat','GPHI','gallerySet','T');
+% save('PRIPGPhi.mat','GPHI','gallerySet','T');
 %% Testing
 tic;
 load('trainingResult.mat');
-load('GPhi.mat');
-probe = loadData('dataset\testing\sketches', false);
+load('PRIPGPhi.mat');
+probe = loadData('PRIP\sketches', false);
 probe = normalize(probe);
 
 result = [];

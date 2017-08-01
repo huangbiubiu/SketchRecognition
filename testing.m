@@ -1,4 +1,4 @@
-function result = testing(dataset, bagSet, GPHI, galleryFeatures)
+function [result, score] = testing(dataset, bagSet, GPHI, galleryFeatures)
     % Set parameters
     gallerySize = size(GPHI, 2);
     datasize = size(dataset, 3);
