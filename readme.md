@@ -60,7 +60,12 @@ In this step, prototype random subspace (P-RS) and direct random subspace (D-RS)
 
 ## Performance
 ### Accuracy
-The accuracy of the latest version is **85%**<sup>1</sup>.
+
+Database|Accuracy
+:------:|:------:
+CUHK testing databse|**85%**<sup>1,3</sup>
+PRIP|**27.5%**<sup>1,4</sup>
+
 
 *Note*:<br>
 Due to the random subspace approach, this accuracy result can't be promised in each experiment.
@@ -71,7 +76,9 @@ Intel&reg; Core&trade; i5-4200M 2.50GHz|4.71<sup>1</sup>
 Intel&reg; Xeon&reg; E5-2673 v3 2.40GHz|2.20<sup>2</sup>
 
 <small>1: P-RS + D-RS</small><br>
-<small>2: Only P-RS</small>
+<small>2: Only P-RS</small><br>
+<small>3: Rank-1 accuracy</small><br>
+<small>4: Rank-5 accuracy</small>
 
 ## Differences from the paper
 1. The combination SIFT and DoG are abandoned due to an all zero feature descriptor vector it will cause.

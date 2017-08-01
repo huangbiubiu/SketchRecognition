@@ -23,12 +23,21 @@ load('PRIPGPhi.mat');
 probe = loadData('PRIP\sketches', false);
 probe = normalize(probe);
 
-result = [];
+rankN = 5;
+
+% result = [];
+matchnum = 0;
 for k = 1 : size(probe,3)
-    result = [result;testing(probe(:,:,k), bagSet, GPHI, T)];
+    [~, thisscore] = testing(probe(:,:,k), bagSet, GPHI, T);
+    [~,sortIndex] = sort(thisscore{1},'descend'); 
+    sortIndex = sortIndex(1:rankN);
+    if size(find(sortIndex == k) ~= 0)
+        matchnum = matchnum + 1;
+    end
+%     result = [result;testing(probe(:,:,k), bagSet, GPHI, T)];
 end
 
-result(:,1) = 1:100;
-accuracy = sum(result(:,1) == result(:,2));
-timespan = toc;
-fprintf('Accuracy = %d, time = %d', accuracy, timespan);
+% result(:,1) = 1:size(probe, 3);
+% accuracy = sum(result(:,1) == result(:,2));
+% timespan = toc;
+% fprintf('Accuracy = %d, time = %d', accuracy, timespan);

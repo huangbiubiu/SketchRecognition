@@ -1,4 +1,4 @@
-function [result, score] = testing(dataset, bagSet, GPHI, galleryFeatures)
+function [result, finalscore] = testing(dataset, bagSet, GPHI, galleryFeatures)
     % Set parameters
     gallerySize = size(GPHI, 2);
     datasize = size(dataset, 3);
@@ -19,6 +19,7 @@ function [result, score] = testing(dataset, bagSet, GPHI, galleryFeatures)
     
     % Recognition
     result = zeros(datasize, 2);
+    finalscore = cell(datasize, 1);
     for index = 1 : datasize
         %initialization
         
@@ -71,6 +72,7 @@ function [result, score] = testing(dataset, bagSet, GPHI, galleryFeatures)
         [~, indexG] = max(S);
         
         result(index,:) = [index, indexG];
+        finalscore{index} = S;
 %         fprintf('Result: %d %d',index, indexG);
         
     end
