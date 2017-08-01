@@ -19,21 +19,17 @@
 %% Testing
 tic;
 load('trainingResult.mat');
-load('PRIPGPhi.mat');
-probe = loadData('PRIP\sketches', false);
+load('GPhi.mat');
+probe = loadData('dataset\testing\sketches', false);
 probe = normalize(probe);
 
 rankN = 5;
 
 % result = [];
-matchnum = 0;
+score = NaN(size(probe, 3), size(probe,3));
 for k = 1 : size(probe,3)
     [~, thisscore] = testing(probe(:,:,k), bagSet, GPHI, T);
-    [~,sortIndex] = sort(thisscore{1},'descend'); 
-    sortIndex = sortIndex(1:rankN);
-    if size(find(sortIndex == k) ~= 0)
-        matchnum = matchnum + 1;
-    end
+    score(:, k) = thisscore{1};
 %     result = [result;testing(probe(:,:,k), bagSet, GPHI, T)];
 end
 
